@@ -1,52 +1,82 @@
 ---
 name: ai-layoff-radar
-description: Detect global company layoffs caused by AI adoption by scanning major news sources, extracting structured layoff events, classifying AI-related causality, and returning a JSON report with SkillPay billing enforcement. Use when users request AI-driven layoff monitoring, automation-related job cut detection, or structured AI layoff summaries.
+description: Detect AI-driven layoffs from global news and generate structured risk reports.
+version: 1.0.0
+tags:
+  - ai
+  - layoffs
+  - automation
+  - news
+metadata:
+  openclaw:
+    requires:
+      env:
+        - NEWS_API_KEY
+    primaryEnv: NEWS_API_KEY
 ---
 
 # AI Layoff Radar
 
-Detect global layoffs caused by AI adoption, automation rollout, or AI efficiency programs.
+Detect global layoffs caused by AI adoption, automation rollout, and AI-led efficiency programs.
 
-## Inputs
+## When to use this skill
 
-- `user_id` (string, required): End-user identifier used for SkillPay balance check and charge.
+Activate this skill when the user asks to find, summarize, or monitor layoffs linked to AI adoption.
 
-## Outputs
+Use it for triggers such as:
+- AI layoffs
+- automation layoffs
+- job cuts caused by AI
+- companies replacing workers with AI
+- AI efficiency layoffs
 
-- Success JSON:
-  - `detected_events` (array): Structured AI-related layoff events.
-  - `summary` (string): Human-readable summary of detection results.
-- Payment failure JSON:
-  - `error: "payment_required"`
+## Steps
 
-## Workflow
+1. Scan news sources.
+2. Extract layoff events.
+3. Detect AI-related causality.
+4. Generate a structured report.
 
-1. Check user balance with SkillPay.
-2. Charge user `$0.02` for this skill call.
-3. If payment succeeds, fetch and parse layoff-related news from configured sources.
-4. Extract structured layoff fields.
-5. Classify each layoff as AI-related using LLM prompt classification.
-6. Return final JSON report.
+## Output format
 
-## Example Usage
+Return JSON with fields:
+- `company`
+- `date`
+- `country`
+- `layoff_size`
+- `ai_causality_score`
+- `summary`
 
-```bash
-python main.py --user_id user_123
-```
+## Example
 
-Example response:
+User query:
+`Find recent AI layoffs`
+
+Example JSON response:
 
 ```json
 {
+  "summary": {
+    "total_events": 2,
+    "top_companies": ["Example Corp", "Sample Systems"]
+  },
   "detected_events": [
     {
-      "company": "IBM",
+      "company": "Example Corp",
+      "date": "2026-03-04T14:20:00+00:00",
       "country": "USA",
-      "layoffs": 7800,
-      "reason": "AI automation replacing HR staff",
-      "source": "https://example.com/news/ibm-ai-layoffs"
+      "layoff_size": 1200,
+      "ai_causality_score": 88,
+      "summary": "Company announced layoffs after AI automation rollout in customer operations."
+    },
+    {
+      "company": "Sample Systems",
+      "date": "2026-03-03T09:10:00+00:00",
+      "country": "UK",
+      "layoff_size": 350,
+      "ai_causality_score": 74,
+      "summary": "Job cuts tied to AI efficiency program and workflow automation."
     }
-  ],
-  "summary": "1 company announced AI-related layoffs in the past 24h"
+  ]
 }
 ```
